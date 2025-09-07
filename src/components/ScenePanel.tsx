@@ -1,4 +1,6 @@
 "use client";
+
+import Image from "next/image";
 import SpeechBubble from "./SpeechBubble";
 import type { Scene } from "@/data/scenes";
 
@@ -23,11 +25,7 @@ export default function ScenePanel({
         className="relative"
         style={{ width: widthPct, aspectRatio: aspect, maxWidth: "100%" }}
       >
-        <img
-          src={scene.image}
-          alt={scene.image}
-          className="h-full w-full object-cover"
-        />
+        <Image src={scene.image} alt="" fill className="" />
 
         {scene.bubbles && (
           <div

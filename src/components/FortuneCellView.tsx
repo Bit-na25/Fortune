@@ -17,7 +17,7 @@ function elementTheme(el: ElementCell["element"]) {
   }
 }
 
-export function ElementCellView({ c }: { c: ElementCell }) {
+function ElementCellView({ c }: { c: ElementCell }) {
   return (
     <div
       className={`p-1 flex flex-col rounded-xl border ${elementTheme(
@@ -41,7 +41,7 @@ function renderPair(label?: string, kor?: string) {
   );
 }
 
-export function TextCellView({ c }: { c: Cell }) {
+function TextCellView({ c }: { c: Cell }) {
   const isEmpty =
     (!c.label || c.label.length === 0) && (!c.kor || c.kor.length === 0);
 
@@ -55,5 +55,29 @@ export function TextCellView({ c }: { c: Cell }) {
       {renderPair(c.label[1], c.kor[1])}
       {renderPair(c.label[2], c.kor[2])}
     </div>
+  );
+}
+
+export function FortuneCellView({
+  items,
+  kind,
+}: {
+  items: ElementCell[] | Cell[];
+  kind: "element" | "text";
+}) {
+  return (
+    <>
+      {kind === "element"
+        ? (items as ElementCell[]).map((c, i) => (
+            <td key={i} className="p-2 bg-white border-r last:border-r-0">
+              <ElementCellView c={c} />
+            </td>
+          ))
+        : (items as Cell[]).map((c, i) => (
+            <td key={i} className="p-2 bg-white border-r last:border-r-0">
+              <TextCellView c={c} />
+            </td>
+          ))}
+    </>
   );
 }

@@ -1,13 +1,13 @@
-import { ElementCellView, TextCellView } from "./FortuneCellView";
+import Image from "next/image";
+import { FortuneCellView } from "./FortuneCellView";
 import { Cell, ElementCell, FortunePayload } from "@/data/fortune.schema";
 
 const COLS = ["時", "日", "月", "年"];
-const ROWS: Array<{
-  key: keyof FortunePayload;
-  label: string;
-  kor: string;
-  type?: "element" | "text";
-}> = [
+
+type RowDef =
+  | { key: keyof FortunePayload; label: string; kor: string; type: "element" }
+  | { key: keyof FortunePayload; label: string; kor: string; type: "text" };
+const ROWS: RowDef[] = [
   { key: "topTenGods", label: "十星", kor: "십성", type: "text" },
   { key: "heavenlyStems", label: "天干", kor: "천간", type: "element" },
   { key: "earthlyBranches", label: "地支", kor: "지지", type: "element" },
@@ -31,7 +31,12 @@ export default function FortuneTable({ data }: { data: FortunePayload }) {
     >
       <div className="px-4 py-12">
         <header className="text-center relative">
-          <img src="./table_title.png" alt="" className="absolute inset-0" />
+          <Image
+            src="/table_title.png"
+            alt=""
+            fill
+            className="absolute inset-0"
+          />
           <p>{name}님의 사주</p>
           <p className="text-2xl font-bold my-2">
             {datetime.year}년 {datetime.month}월 {datetime.day}일{" "}
@@ -57,41 +62,28 @@ export default function FortuneTable({ data }: { data: FortunePayload }) {
             </thead>
 
             <tbody>
-              {ROWS.map((row) => {
-                const arr = data[row.key] as any[];
-                return (
-                  <tr key={row.key} className="border-b border-black">
-                    <th className="px-2 py-2 border-r border-black">
-                      <p
-                        className={`font-bold ${
-                          row.label.length > 2 ? "text-xs" : ""
-                        }`}
-                      >
-                        {row.label}
-                      </p>
-                      <p className="text-[8px]">({row.kor})</p>
-                    </th>
-
-                    {row.type === "element"
-                      ? (arr as ElementCell[]).map((c, i) => (
-                          <td
-                            key={i}
-                            className="p-2 bg-white border-r last:border-r-0"
-                          >
-                            <ElementCellView c={c} />
-                          </td>
-                        ))
-                      : (arr as Cell[]).map((c, i) => (
-                          <td
-                            key={i}
-                            className="p-2 bg-white border-r last:border-r-0"
-                          >
-                            <TextCellView c={c} />
-                          </td>
-                        ))}
-                  </tr>
-                );
-              })}
+              {ROWS.map((row) => (
+                <tr key={row.key} className="border-b border-black">
+                  <th className="px-2 py-2 border-r border-black">
+                    <p
+                      className={`font-bold ${
+                        row.label.length > 2 ? "text-xs" : ""
+                      }`}
+                    >
+                      {row.label}
+                    </p>
+                    <p className="text-[8px]">({row.kor})</p>
+                  </th>
+                  <FortuneCellView
+                    items={
+                      row.type === "element"
+                        ? (data[row.key] as ElementCell[])
+                        : (data[row.key] as Cell[])
+                    }
+                    kind={row.type}
+                  />
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
